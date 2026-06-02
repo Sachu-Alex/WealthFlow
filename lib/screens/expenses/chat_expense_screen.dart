@@ -246,7 +246,7 @@ class _ChatExpenseScreenState extends ConsumerState<ChatExpenseScreen>
     final isDark = theme.brightness == Brightness.dark;
 
     return Scaffold(
-      backgroundColor: isDark ? const Color(0xFF0F172A) : const Color(0xFFF0FDF9),
+      backgroundColor: isDark ? const Color(0xFF0A1628) : const Color(0xFFF0FDF9),
       appBar: _buildAppBar(context, isDark),
       body: Column(
         children: [
@@ -331,7 +331,7 @@ class _ChatExpenseScreenState extends ConsumerState<ChatExpenseScreen>
           ),
         ],
       ),
-      backgroundColor: isDark ? const Color(0xFF0F172A) : const Color(0xFFF0FDF9),
+      backgroundColor: isDark ? const Color(0xFF0A1628) : const Color(0xFFF0FDF9),
       elevation: 0,
       scrolledUnderElevation: 0,
       bottom: PreferredSize(
@@ -394,7 +394,7 @@ class _ChatExpenseScreenState extends ConsumerState<ChatExpenseScreen>
       child: Container(
         padding: const EdgeInsets.fromLTRB(16, 8, 16, 10),
         decoration: BoxDecoration(
-          color: isDark ? const Color(0xFF1E293B) : Colors.white,
+          color: isDark ? const Color(0xFF0F2233) : Colors.white,
           border: Border(
             top: BorderSide(
               color: isDark
@@ -578,7 +578,7 @@ class _BotTextBubble extends StatelessWidget {
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
             decoration: BoxDecoration(
-              color: isDark ? const Color(0xFF1E293B) : Colors.white,
+              color: isDark ? const Color(0xFF0F2233) : Colors.white,
               borderRadius: const BorderRadius.only(
                 topLeft: Radius.circular(18),
                 topRight: Radius.circular(18),
@@ -600,7 +600,7 @@ class _BotTextBubble extends StatelessWidget {
               style: TextStyle(
                 fontSize: 14,
                 height: 1.45,
-                color: isDark ? Colors.white : const Color(0xFF0F172A),
+                color: isDark ? Colors.white : const Color(0xFF0A1628),
               ),
             ),
           ),
@@ -779,7 +779,7 @@ class _AmountPickerBubble extends StatelessWidget {
               child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
                 decoration: BoxDecoration(
-                  color: isDark ? const Color(0xFF1E293B) : Colors.white,
+                  color: isDark ? const Color(0xFF0F2233) : Colors.white,
                   borderRadius: const BorderRadius.only(
                     topLeft: Radius.circular(18),
                     topRight: Radius.circular(18),
@@ -980,7 +980,7 @@ class _SuccessBubble extends StatelessWidget {
           child: Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: isDark ? const Color(0xFF1E293B) : Colors.white,
+              color: isDark ? const Color(0xFF0F2233) : Colors.white,
               borderRadius: const BorderRadius.only(
                 topLeft: Radius.circular(18),
                 topRight: Radius.circular(18),
@@ -1182,7 +1182,7 @@ class _TypingDotsState extends State<_TypingDots>
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
       decoration: BoxDecoration(
-        color: widget.isDark ? const Color(0xFF1E293B) : Colors.white,
+        color: widget.isDark ? const Color(0xFF0F2233) : Colors.white,
         borderRadius: const BorderRadius.only(
           topLeft: Radius.circular(18),
           topRight: Radius.circular(18),

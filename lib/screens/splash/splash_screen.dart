@@ -13,280 +13,187 @@ class SplashScreen extends ConsumerStatefulWidget {
 
 class _SplashScreenState extends ConsumerState<SplashScreen>
     with SingleTickerProviderStateMixin {
-  late AnimationController _chartController;
+  late AnimationController _barsController;
   bool _navigated = false;
 
-  static const _bgColor = Color(0xFF0A0F1E);
+  static const _bg = Color(0xFF033544);
   static const _teal = Color(0xFF0D9488);
+  static const _tealBright = Color(0xFF2DD4BF);
 
   @override
   void initState() {
     super.initState();
-    _chartController = AnimationController(
+    _barsController = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 1800),
+      duration: const Duration(milliseconds: 1600),
     )..forward();
 
-    // Navigate after animations settle
-    Future.delayed(const Duration(milliseconds: 2600), _navigate);
+    Future.delayed(const Duration(milliseconds: 2500), _navigate);
   }
 
   void _navigate() {
     if (_navigated || !mounted) return;
     _navigated = true;
     final user = ref.read(authStateProvider).valueOrNull;
-    if (user != null) {
-      context.go('/');
-    } else {
-      context.go('/login');
-    }
+    context.go(user != null ? '/' : '/login');
   }
 
   @override
   void dispose() {
-    _chartController.dispose();
+    _barsController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: _bgColor,
-      body: Stack(
-        children: [
-          // Subtle radial glow behind logo
-          Positioned(
-            top: MediaQuery.of(context).size.height * 0.18,
-            left: 0,
-            right: 0,
-            child: Center(
-              child: Container(
-                width: 280,
-                height: 280,
+      backgroundColor: _bg,
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            // ── Logo ───────────────────────────────────────────────────────
+            Image.asset(
+              'assets/images/logo.png',
+              width: 180,
+              height: 180,
+              fit: BoxFit.contain,
+              errorBuilder: (_, __, ___) => Container(
+                width: 96,
+                height: 96,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  gradient: RadialGradient(
-                    colors: [
-                      _teal.withValues(alpha: 0.18),
-                      _bgColor.withValues(alpha: 0.0),
-                    ],
+                  gradient: const LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [_teal, _tealBright],
                   ),
                 ),
-              ),
-            ),
-          ),
-
-          Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const SizedBox(height: 0),
-                // ── Logo mark ──────────────────────────────────────────────
-                _LogoMark()
-                    .animate()
-                    .scale(
-                      begin: const Offset(0.7, 0.7),
-                      end: const Offset(1.0, 1.0),
-                      duration: 700.ms,
-                      curve: Curves.easeOutBack,
-                    )
-                    .fadeIn(duration: 500.ms),
-
-                const SizedBox(height: 28),
-
-                // ── App name ───────────────────────────────────────────────
-                Text(
-                  'WealthFlow',
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 36,
-                    fontWeight: FontWeight.w800,
-                    letterSpacing: -0.5,
-                  ),
-                )
-                    .animate(delay: 300.ms)
-                    .fadeIn(duration: 500.ms)
-                    .slideY(begin: 0.3, end: 0.0, duration: 500.ms, curve: Curves.easeOut),
-
-                const SizedBox(height: 10),
-
-                // ── Tagline ────────────────────────────────────────────────
-                Text(
-                  'Your wealth, flowing forward',
-                  style: TextStyle(
-                    color: Colors.white.withValues(alpha: 0.45),
-                    fontSize: 15,
-                    fontWeight: FontWeight.w400,
-                    letterSpacing: 0.2,
-                  ),
-                )
-                    .animate(delay: 550.ms)
-                    .fadeIn(duration: 500.ms)
-                    .slideY(begin: 0.3, end: 0.0, duration: 500.ms, curve: Curves.easeOut),
-
-                const SizedBox(height: 56),
-
-                // ── Animated chart bars ────────────────────────────────────
-                _AnimatedChart(controller: _chartController)
-                    .animate(delay: 700.ms)
-                    .fadeIn(duration: 600.ms),
-
-                const SizedBox(height: 64),
-
-                // ── Loading dots ───────────────────────────────────────────
-                _LoadingDots()
-                    .animate(delay: 1000.ms)
-                    .fadeIn(duration: 400.ms),
-              ],
-            ),
-          ),
-
-          // Bottom version label
-          Positioned(
-            bottom: 40,
-            left: 0,
-            right: 0,
-            child: Text(
-              'v1.0.0',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                color: Colors.white.withValues(alpha: 0.2),
-                fontSize: 12,
-                fontWeight: FontWeight.w400,
+                child: const Icon(Icons.trending_up_rounded,
+                    color: Colors.white, size: 44),
               ),
             )
-                .animate(delay: 1200.ms)
-                .fadeIn(duration: 600.ms),
-          ),
-        ],
-      ),
-    );
-  }
-}
+                .animate()
+                .scale(
+                  begin: const Offset(0.7, 0.7),
+                  end: const Offset(1.0, 1.0),
+                  duration: 700.ms,
+                  curve: Curves.easeOutBack,
+                )
+                .fadeIn(duration: 500.ms),
 
-// ── Logo mark widget ──────────────────────────────────────────────────────────
+            const SizedBox(height: 48),
 
-class _LogoMark extends StatelessWidget {
-  static const _teal = Color(0xFF0D9488);
-  static const _tealBright = Color(0xFF2DD4BF);
+            // ── Animated bar chart ─────────────────────────────────────────
+            _AnimatedBars(controller: _barsController)
+                .animate(delay: 600.ms)
+                .fadeIn(duration: 500.ms),
 
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: 96,
-      height: 96,
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        gradient: const LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [_teal, _tealBright],
+            const SizedBox(height: 48),
+
+            // ── Loading indicator ──────────────────────────────────────────
+            _PulsingDots()
+                .animate(delay: 900.ms)
+                .fadeIn(duration: 400.ms),
+          ],
         ),
-        boxShadow: [
-          BoxShadow(
-            color: _teal.withValues(alpha: 0.4),
-            blurRadius: 32,
-            offset: const Offset(0, 8),
-          ),
-        ],
       ),
-      child: const Icon(
-        Icons.trending_up_rounded,
-        color: Colors.white,
-        size: 44,
+
+      // Version
+      bottomNavigationBar: Padding(
+        padding: const EdgeInsets.only(bottom: 32),
+        child: Text(
+          'v1.0.0',
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            color: Colors.white.withValues(alpha: 0.18),
+            fontSize: 12,
+          ),
+        )
+            .animate(delay: 1000.ms)
+            .fadeIn(duration: 600.ms),
       ),
     );
   }
 }
 
-// ── Animated chart bars ───────────────────────────────────────────────────────
+// ── Animated rising bars ──────────────────────────────────────────────────────
 
-class _AnimatedChart extends StatelessWidget {
+class _AnimatedBars extends StatelessWidget {
   final AnimationController controller;
 
+  static const _heights = [0.3, 0.5, 0.4, 0.72, 0.58, 0.88, 0.68];
   static const _teal = Color(0xFF0D9488);
   static const _tealBright = Color(0xFF2DD4BF);
 
-  static const _barHeights = [0.35, 0.55, 0.45, 0.75, 0.60, 0.85, 0.70];
-
-  const _AnimatedChart({required this.controller});
+  const _AnimatedBars({required this.controller});
 
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: 220,
-      height: 64,
+      width: 200,
+      height: 56,
       child: AnimatedBuilder(
         animation: controller,
-        builder: (context, _) {
-          return Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: List.generate(_barHeights.length, (i) {
-              final delay = i / _barHeights.length;
-              final progress = ((controller.value - delay) / (1 - delay)).clamp(0.0, 1.0);
-              final eased = Curves.easeOutCubic.transform(progress);
-              final maxH = 64.0;
-              final h = _barHeights[i] * maxH * eased;
+        builder: (_, __) => Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: List.generate(_heights.length, (i) {
+            final delay = i / _heights.length;
+            final t = ((controller.value - delay) / (1 - delay)).clamp(0.0, 1.0);
+            final eased = Curves.easeOutCubic.transform(t);
+            final h = _heights[i] * 56 * eased;
 
-              return Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 3),
-                  child: Container(
-                    height: h,
-                    decoration: BoxDecoration(
-                      borderRadius: const BorderRadius.vertical(
-                        top: Radius.circular(4),
-                      ),
-                      gradient: LinearGradient(
-                        begin: Alignment.bottomCenter,
-                        end: Alignment.topCenter,
-                        colors: [
-                          _teal.withValues(alpha: 0.9),
-                          _tealBright.withValues(alpha: 0.7),
-                        ],
-                      ),
+            return Expanded(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 3),
+                child: Container(
+                  height: h,
+                  decoration: BoxDecoration(
+                    borderRadius: const BorderRadius.vertical(top: Radius.circular(4)),
+                    gradient: LinearGradient(
+                      begin: Alignment.bottomCenter,
+                      end: Alignment.topCenter,
+                      colors: [
+                        _teal.withValues(alpha: 0.9),
+                        _tealBright.withValues(alpha: 0.7),
+                      ],
                     ),
                   ),
                 ),
-              );
-            }),
-          );
-        },
+              ),
+            );
+          }),
+        ),
       ),
     );
   }
 }
 
-// ── Loading dots ──────────────────────────────────────────────────────────────
+// ── Pulsing dots ──────────────────────────────────────────────────────────────
 
-class _LoadingDots extends StatelessWidget {
+class _PulsingDots extends StatelessWidget {
   static const _teal = Color(0xFF0D9488);
 
   @override
   Widget build(BuildContext context) {
     return Row(
       mainAxisSize: MainAxisSize.min,
-      children: List.generate(3, (i) {
-        return Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 4),
-          child: Container(
-            width: 6,
-            height: 6,
-            decoration: BoxDecoration(
-              color: _teal.withValues(alpha: 0.6),
-              shape: BoxShape.circle,
-            ),
-          )
-              .animate(onPlay: (c) => c.repeat())
-              .fadeIn(
-                delay: Duration(milliseconds: i * 200),
-                duration: 400.ms,
-              )
-              .then()
-              .fadeOut(duration: 400.ms),
-        );
-      }),
+      children: List.generate(3, (i) => Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 4),
+        child: Container(
+          width: 6,
+          height: 6,
+          decoration: BoxDecoration(
+            color: _teal.withValues(alpha: 0.6),
+            shape: BoxShape.circle,
+          ),
+        )
+            .animate(onPlay: (c) => c.repeat())
+            .fadeIn(delay: Duration(milliseconds: i * 220), duration: 400.ms)
+            .then()
+            .fadeOut(duration: 400.ms),
+      )),
     );
   }
 }

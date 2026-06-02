@@ -185,9 +185,9 @@ class _SummaryCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF1E293B) : Colors.white,
+        color: isDark ? const Color(0xFF0F2233) : Colors.white,
         borderRadius: BorderRadius.circular(16),
-        border: isDark ? Border.all(color: const Color(0xFF334155)) : null,
+        border: isDark ? Border.all(color: const Color(0xFF1A3349)) : null,
         boxShadow: isDark
             ? null
             : [
@@ -303,10 +303,10 @@ class _CategoryBreakdownState extends State<_CategoryBreakdown> {
       child: Container(
         padding: const EdgeInsets.all(18),
         decoration: BoxDecoration(
-          color: widget.isDark ? const Color(0xFF1E293B) : Colors.white,
+          color: widget.isDark ? const Color(0xFF0F2233) : Colors.white,
           borderRadius: BorderRadius.circular(16),
           border: widget.isDark
-              ? Border.all(color: const Color(0xFF334155))
+              ? Border.all(color: const Color(0xFF1A3349))
               : null,
           boxShadow: widget.isDark
               ? null
@@ -500,9 +500,9 @@ class _ExpenseListItem extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 13),
         decoration: BoxDecoration(
-          color: isDark ? const Color(0xFF1E293B) : Colors.white,
+          color: isDark ? const Color(0xFF0F2233) : Colors.white,
           borderRadius: BorderRadius.circular(14),
-          border: isDark ? Border.all(color: const Color(0xFF334155)) : null,
+          border: isDark ? Border.all(color: const Color(0xFF1A3349)) : null,
           boxShadow: isDark
               ? null
               : [

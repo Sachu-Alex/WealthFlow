@@ -368,9 +368,9 @@ class _RingSection extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 20),
       decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF1E293B) : Colors.white,
+        color: isDark ? const Color(0xFF0F2233) : Colors.white,
         borderRadius: BorderRadius.circular(20),
-        border: isDark ? Border.all(color: const Color(0xFF334155)) : null,
+        border: isDark ? Border.all(color: const Color(0xFF1A3349)) : null,
         boxShadow: isDark
             ? null
             : [
@@ -488,9 +488,9 @@ class _BalanceCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF1E293B) : Colors.white,
+        color: isDark ? const Color(0xFF0F2233) : Colors.white,
         borderRadius: BorderRadius.circular(16),
-        border: isDark ? Border.all(color: const Color(0xFF334155)) : null,
+        border: isDark ? Border.all(color: const Color(0xFF1A3349)) : null,
         boxShadow: isDark
             ? null
             : [
@@ -652,9 +652,9 @@ class _ChartSection extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF1E293B) : Colors.white,
+        color: isDark ? const Color(0xFF0F2233) : Colors.white,
         borderRadius: BorderRadius.circular(16),
-        border: isDark ? Border.all(color: const Color(0xFF334155)) : null,
+        border: isDark ? Border.all(color: const Color(0xFF1A3349)) : null,
         boxShadow: isDark
             ? null
             : [
@@ -1009,7 +1009,7 @@ class _BarChartWidget extends StatelessWidget {
                 BarChartRodData(
                   toY: last6[i].value,
                   gradient: const LinearGradient(
-                    colors: [Color(0xFF0D9488), Color(0xFF0891B2)],
+                    colors: [Color(0xFF0D9488), Color(0xFF2DD4BF)],
                     begin: Alignment.bottomCenter,
                     end: Alignment.topCenter,
                   ),

@@ -12,10 +12,8 @@ class LoginScreen extends ConsumerStatefulWidget {
 }
 
 class _LoginScreenState extends ConsumerState<LoginScreen> {
-  static const _bg = Color(0xFF0A0F1E);
-  static const _surface = Color(0xFF111827);
-  static const _teal = Color(0xFF0D9488);
-  static const _tealBright = Color(0xFF2DD4BF);
+  static const _bg = Color(0xFF033544);
+  static const _teal = Color(0xFF2DD4BF);
 
   bool _googleLoading = false;
   bool _appleLoading = false;
@@ -26,8 +24,17 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     try {
       final cred = await ref.read(authServiceProvider).signInWithGoogle();
       if (cred != null && mounted) context.go('/');
-    } catch (e) {
-      if (mounted) _showError('Google sign-in failed. Please try again.');
+    } catch (_) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: const Text('Google sign-in failed. Try again.'),
+            backgroundColor: const Color(0xFFDC2626),
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          ),
+        );
+      }
     } finally {
       if (mounted) setState(() => _googleLoading = false);
     }
@@ -39,22 +46,20 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     try {
       final cred = await ref.read(authServiceProvider).signInWithApple();
       if (cred != null && mounted) context.go('/');
-    } catch (e) {
-      if (mounted) _showError('Apple sign-in failed. Please try again.');
+    } catch (_) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: const Text('Apple sign-in failed. Try again.'),
+            backgroundColor: const Color(0xFFDC2626),
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          ),
+        );
+      }
     } finally {
       if (mounted) setState(() => _appleLoading = false);
     }
-  }
-
-  void _showError(String msg) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(msg),
-        backgroundColor: const Color(0xFFDC2626),
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      ),
-    );
   }
 
   @override
@@ -64,223 +69,205 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
     return Scaffold(
       backgroundColor: _bg,
-      body: Stack(
-        children: [
-          // Background grid lines — subtle
-          Positioned.fill(child: _GridLines()),
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 28),
+          child: Column(
+            children: [
+              SizedBox(height: size.height * 0.06),
 
-          // Top teal glow
-          Positioned(
-            top: -80,
-            left: size.width * 0.5 - 160,
-            child: Container(
-              width: 320,
-              height: 320,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                gradient: RadialGradient(
-                  colors: [
-                    _teal.withValues(alpha: 0.15),
-                    Colors.transparent,
-                  ],
-                ),
+              // ── Hero: logo image ──────────────────────────────────────────
+              // THE main event — everything else is a supporting act
+              _LogoHero()
+                  .animate()
+                  .scale(
+                    begin: const Offset(0.65, 0.65),
+                    end: const Offset(1.0, 1.0),
+                    duration: 750.ms,
+                    curve: Curves.easeOutBack,
+                  )
+                  .fadeIn(duration: 500.ms),
+
+              const SizedBox(height: 28),
+
+              // ── Tagline ───────────────────────────────────────────────────
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: ['PLAN', '•', 'INVEST', '•', 'GROW']
+                    .asMap()
+                    .entries
+                    .map((e) {
+                  final isDot = e.value == '•';
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 5),
+                    child: Text(
+                      e.value,
+                      style: TextStyle(
+                        color: isDot
+                            ? _teal.withValues(alpha: 0.4)
+                            : _teal,
+                        fontSize: isDot ? 10 : 12,
+                        fontWeight: FontWeight.w700,
+                        letterSpacing: isDot ? 0 : 2.5,
+                      ),
+                    )
+                        .animate(delay: Duration(milliseconds: 450 + e.key * 80))
+                        .fadeIn(duration: 400.ms)
+                        .slideY(begin: 0.3, end: 0, duration: 350.ms, curve: Curves.easeOut),
+                  );
+                }).toList(),
               ),
-            ),
-          ),
 
-          SafeArea(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 28),
-              child: Column(
+              const Spacer(),
+
+              // ── Auth section ──────────────────────────────────────────────
+              Column(
                 children: [
-                  const Spacer(flex: 2),
-
-                  // ── Logo + Name ───────────────────────────────────────────
-                  _buildLogo()
-                      .animate()
-                      .scale(
-                        begin: const Offset(0.8, 0.8),
-                        duration: 600.ms,
-                        curve: Curves.easeOutBack,
-                      )
+                  // Divider
+                  _DividerRow()
+                      .animate(delay: 800.ms)
                       .fadeIn(duration: 500.ms),
 
-                  const SizedBox(height: 24),
+                  const SizedBox(height: 28),
 
-                  Text(
-                    'WealthFlow',
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 32,
-                      fontWeight: FontWeight.w800,
-                      letterSpacing: -0.5,
-                    ),
-                  )
-                      .animate(delay: 200.ms)
-                      .fadeIn(duration: 500.ms)
-                      .slideY(begin: 0.2, end: 0, duration: 400.ms, curve: Curves.easeOut),
-
-                  const SizedBox(height: 10),
-
-                  Text(
-                    'Track. Grow. Prosper.',
-                    style: TextStyle(
-                      color: Colors.white.withValues(alpha: 0.4),
-                      fontSize: 15,
-                      fontWeight: FontWeight.w400,
-                      letterSpacing: 0.5,
-                    ),
-                  )
-                      .animate(delay: 350.ms)
-                      .fadeIn(duration: 500.ms),
-
-                  const Spacer(flex: 2),
-
-                  // ── Feature pills ─────────────────────────────────────────
-                  _buildFeaturePills()
-                      .animate(delay: 500.ms)
-                      .fadeIn(duration: 500.ms)
-                      .slideY(begin: 0.2, end: 0, duration: 400.ms, curve: Curves.easeOut),
-
-                  const Spacer(flex: 3),
-
-                  // ── Divider label ─────────────────────────────────────────
-                  Row(
-                    children: [
-                      Expanded(
-                        child: Divider(
-                          color: Colors.white.withValues(alpha: 0.1),
-                          thickness: 1,
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16),
-                        child: Text(
-                          'Continue with',
-                          style: TextStyle(
-                            color: Colors.white.withValues(alpha: 0.35),
-                            fontSize: 13,
-                            fontWeight: FontWeight.w400,
-                          ),
-                        ),
-                      ),
-                      Expanded(
-                        child: Divider(
-                          color: Colors.white.withValues(alpha: 0.1),
-                          thickness: 1,
-                        ),
-                      ),
-                    ],
-                  )
-                      .animate(delay: 650.ms)
-                      .fadeIn(duration: 400.ms),
-
-                  const SizedBox(height: 20),
-
-                  // ── Google button ─────────────────────────────────────────
+                  // Google
                   _GoogleButton(loading: _googleLoading, onTap: _handleGoogle)
-                      .animate(delay: 750.ms)
+                      .animate(delay: 900.ms)
                       .fadeIn(duration: 400.ms)
-                      .slideY(begin: 0.3, end: 0, duration: 400.ms, curve: Curves.easeOut),
+                      .slideY(begin: 0.25, end: 0, duration: 450.ms, curve: Curves.easeOut),
 
                   if (showApple) ...[
                     const SizedBox(height: 14),
                     _AppleButton(loading: _appleLoading, onTap: _handleApple)
-                        .animate(delay: 850.ms)
+                        .animate(delay: 1000.ms)
                         .fadeIn(duration: 400.ms)
-                        .slideY(begin: 0.3, end: 0, duration: 400.ms, curve: Curves.easeOut),
+                        .slideY(begin: 0.25, end: 0, duration: 450.ms, curve: Curves.easeOut),
                   ],
 
-                  const SizedBox(height: 32),
+                  const SizedBox(height: 28),
 
-                  // ── Privacy note ──────────────────────────────────────────
                   Text(
-                    'By continuing, you agree to our Terms of Service\nand Privacy Policy.',
+                    'By continuing, you agree to our Terms & Privacy Policy.',
                     textAlign: TextAlign.center,
                     style: TextStyle(
-                      color: Colors.white.withValues(alpha: 0.25),
+                      color: Colors.white.withValues(alpha: 0.22),
                       fontSize: 12,
-                      height: 1.6,
+                      height: 1.5,
                     ),
                   )
-                      .animate(delay: 950.ms)
+                      .animate(delay: 1100.ms)
                       .fadeIn(duration: 500.ms),
-
-                  const SizedBox(height: 24),
                 ],
-              ),
-            ),
+              )
+                  .animate(delay: 700.ms)
+                  .slideY(begin: 0.12, end: 0, duration: 600.ms, curve: Curves.easeOut),
+
+              const SizedBox(height: 20),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }
+}
 
-  Widget _buildLogo() {
+// ── Logo hero — image with elegant fallback ───────────────────────────────────
+
+class _LogoHero extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Image.asset(
+      'assets/images/logo.png',
+      width: 220,
+      height: 220,
+      fit: BoxFit.contain,
+      errorBuilder: (_, __, ___) => const _FallbackLogo(),
+    );
+  }
+}
+
+class _FallbackLogo extends StatelessWidget {
+  const _FallbackLogo();
+
+  @override
+  Widget build(BuildContext context) {
     return Container(
-      width: 88,
-      height: 88,
+      width: 220,
+      height: 220,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
         gradient: const LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [_teal, _tealBright],
+          colors: [Color(0xFF0D9488), Color(0xFF2DD4BF)],
         ),
-        boxShadow: [
-          BoxShadow(
-            color: _teal.withValues(alpha: 0.45),
-            blurRadius: 28,
-            offset: const Offset(0, 8),
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const Icon(Icons.trending_up_rounded, color: Colors.white, size: 56),
+          const SizedBox(height: 8),
+          RichText(
+            text: const TextSpan(
+              children: [
+                TextSpan(
+                  text: 'Wealth',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 22,
+                    fontWeight: FontWeight.w800,
+                    letterSpacing: -0.5,
+                  ),
+                ),
+                TextSpan(
+                  text: 'Flow',
+                  style: TextStyle(
+                    color: Color(0xFFB2F5EA),
+                    fontSize: 22,
+                    fontWeight: FontWeight.w800,
+                    letterSpacing: -0.5,
+                  ),
+                ),
+              ],
+            ),
           ),
         ],
       ),
-      child: const Icon(Icons.trending_up_rounded, color: Colors.white, size: 40),
-    );
-  }
-
-  Widget _buildFeaturePills() {
-    final features = [
-      ('Investments', Icons.show_chart_rounded),
-      ('Withdrawals', Icons.account_balance_wallet_rounded),
-      ('Expenses', Icons.receipt_long_rounded),
-    ];
-
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: features.map((f) {
-        return Container(
-          margin: const EdgeInsets.symmetric(horizontal: 5),
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-          decoration: BoxDecoration(
-            color: _surface,
-            borderRadius: BorderRadius.circular(24),
-            border: Border.all(
-              color: Colors.white.withValues(alpha: 0.08),
-            ),
-          ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(f.$2, size: 14, color: _tealBright),
-              const SizedBox(width: 6),
-              Text(
-                f.$1,
-                style: TextStyle(
-                  color: Colors.white.withValues(alpha: 0.7),
-                  fontSize: 12,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-            ],
-          ),
-        );
-      }).toList(),
     );
   }
 }
 
-// ── Google Sign-In button ─────────────────────────────────────────────────────
+// ── Divider row ───────────────────────────────────────────────────────────────
+
+class _DividerRow extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Expanded(
+          child: Divider(color: Colors.white.withValues(alpha: 0.1), thickness: 1),
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: Text(
+            'Sign in to continue',
+            style: TextStyle(
+              color: Colors.white.withValues(alpha: 0.3),
+              fontSize: 12,
+              fontWeight: FontWeight.w500,
+              letterSpacing: 0.3,
+            ),
+          ),
+        ),
+        Expanded(
+          child: Divider(color: Colors.white.withValues(alpha: 0.1), thickness: 1),
+        ),
+      ],
+    );
+  }
+}
+
+// ── Google button ─────────────────────────────────────────────────────────────
 
 class _GoogleButton extends StatelessWidget {
   final bool loading;
@@ -290,40 +277,39 @@ class _GoogleButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return _AuthButton(
+    return _PressableButton(
       onTap: onTap,
-      loading: loading,
-      backgroundColor: Colors.white,
-      borderColor: Colors.white,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          if (loading)
-            const SizedBox(
+      color: Colors.white,
+      child: loading
+          ? const SizedBox(
               width: 22,
               height: 22,
-              child: CircularProgressIndicator(strokeWidth: 2, color: Color(0xFF1F2937)),
-            )
-          else ...[
-            _GoogleLogo(),
-            const SizedBox(width: 12),
-            const Text(
-              'Continue with Google',
-              style: TextStyle(
+              child: CircularProgressIndicator(
+                strokeWidth: 2,
                 color: Color(0xFF1F2937),
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-                letterSpacing: 0.1,
               ),
+            )
+          : Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                _GoogleG(),
+                const SizedBox(width: 14),
+                const Text(
+                  'Continue with Google',
+                  style: TextStyle(
+                    color: Color(0xFF1F2937),
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                    letterSpacing: 0.1,
+                  ),
+                ),
+              ],
             ),
-          ],
-        ],
-      ),
     );
   }
 }
 
-// ── Apple Sign-In button ──────────────────────────────────────────────────────
+// ── Apple button ──────────────────────────────────────────────────────────────
 
 class _AppleButton extends StatelessWidget {
   final bool loading;
@@ -333,61 +319,59 @@ class _AppleButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return _AuthButton(
+    return _PressableButton(
       onTap: onTap,
-      loading: loading,
-      backgroundColor: const Color(0xFF1A1A1A),
-      borderColor: const Color(0xFF2A2A2A),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          if (loading)
-            const SizedBox(
+      color: const Color(0xFF1A1A1A),
+      border: Border.all(color: const Color(0xFF2C2C2E), width: 1),
+      child: loading
+          ? const SizedBox(
               width: 22,
               height: 22,
-              child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
-            )
-          else ...[
-            const Icon(Icons.apple, color: Colors.white, size: 24),
-            const SizedBox(width: 10),
-            const Text(
-              'Continue with Apple',
-              style: TextStyle(
+              child: CircularProgressIndicator(
+                strokeWidth: 2,
                 color: Colors.white,
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-                letterSpacing: 0.1,
               ),
+            )
+          : const Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(Icons.apple, color: Colors.white, size: 24),
+                SizedBox(width: 12),
+                Text(
+                  'Continue with Apple',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                    letterSpacing: 0.1,
+                  ),
+                ),
+              ],
             ),
-          ],
-        ],
-      ),
     );
   }
 }
 
-// ── Shared button shell ───────────────────────────────────────────────────────
+// ── Pressable button shell ────────────────────────────────────────────────────
 
-class _AuthButton extends StatefulWidget {
+class _PressableButton extends StatefulWidget {
   final VoidCallback onTap;
-  final bool loading;
-  final Color backgroundColor;
-  final Color borderColor;
+  final Color color;
+  final BoxBorder? border;
   final Widget child;
 
-  const _AuthButton({
+  const _PressableButton({
     required this.onTap,
-    required this.loading,
-    required this.backgroundColor,
-    required this.borderColor,
+    required this.color,
     required this.child,
+    this.border,
   });
 
   @override
-  State<_AuthButton> createState() => _AuthButtonState();
+  State<_PressableButton> createState() => _PressableButtonState();
 }
 
-class _AuthButtonState extends State<_AuthButton> {
+class _PressableButtonState extends State<_PressableButton> {
   bool _pressed = false;
 
   @override
@@ -400,113 +384,79 @@ class _AuthButtonState extends State<_AuthButton> {
       },
       onTapCancel: () => setState(() => _pressed = false),
       child: AnimatedScale(
-        scale: _pressed ? 0.97 : 1.0,
-        duration: const Duration(milliseconds: 100),
-        child: Container(
-          width: double.infinity,
-          height: 56,
-          decoration: BoxDecoration(
-            color: widget.backgroundColor,
-            borderRadius: BorderRadius.circular(14),
-            border: Border.all(color: widget.borderColor, width: 1),
+        scale: _pressed ? 0.975 : 1.0,
+        duration: const Duration(milliseconds: 90),
+        child: AnimatedOpacity(
+          opacity: _pressed ? 0.88 : 1.0,
+          duration: const Duration(milliseconds: 90),
+          child: Container(
+            width: double.infinity,
+            height: 56,
+            decoration: BoxDecoration(
+              color: widget.color,
+              borderRadius: BorderRadius.circular(16),
+              border: widget.border,
+            ),
+            alignment: Alignment.center,
+            child: widget.child,
           ),
-          child: widget.child,
         ),
       ),
     );
   }
 }
 
-// ── Google logo (SVG-free) ────────────────────────────────────────────────────
+// ── Google "G" logo ───────────────────────────────────────────────────────────
 
-class _GoogleLogo extends StatelessWidget {
+class _GoogleG extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
       width: 22,
       height: 22,
-      child: CustomPaint(painter: _GoogleLogoPainter()),
+      child: CustomPaint(painter: _GoogleGPainter()),
     );
   }
 }
 
-class _GoogleLogoPainter extends CustomPainter {
+class _GoogleGPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
-    final c = Offset(size.width / 2, size.height / 2);
-    final r = size.width / 2;
+    final w = size.width;
+    final h = size.height;
+    final cx = w / 2;
+    final cy = h / 2;
+    final r = w * 0.46;
+    final sw = w * 0.17;
 
-    // Blue arc (top/right)
-    canvas.drawArc(
-      Rect.fromCircle(center: c, radius: r),
-      -1.57, 2.35, false,
-      Paint()
-        ..color = const Color(0xFF4285F4)
-        ..style = PaintingStyle.stroke
-        ..strokeWidth = size.width * 0.18,
-    );
-    // Green arc (bottom)
-    canvas.drawArc(
-      Rect.fromCircle(center: c, radius: r),
-      0.785, 1.57, false,
-      Paint()
-        ..color = const Color(0xFF34A853)
-        ..style = PaintingStyle.stroke
-        ..strokeWidth = size.width * 0.18,
-    );
-    // Yellow arc (bottom-left)
-    canvas.drawArc(
-      Rect.fromCircle(center: c, radius: r),
-      2.355, 0.785, false,
-      Paint()
-        ..color = const Color(0xFFFBBC05)
-        ..style = PaintingStyle.stroke
-        ..strokeWidth = size.width * 0.18,
-    );
-    // Red arc (left/top)
-    canvas.drawArc(
-      Rect.fromCircle(center: c, radius: r),
-      3.14, 0.43, false,
-      Paint()
-        ..color = const Color(0xFFEA4335)
-        ..style = PaintingStyle.stroke
-        ..strokeWidth = size.width * 0.18,
-    );
+    void arc(double startAngle, double sweep, Color color) {
+      canvas.drawArc(
+        Rect.fromCircle(center: Offset(cx, cy), radius: r),
+        startAngle,
+        sweep,
+        false,
+        Paint()
+          ..color = color
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = sw
+          ..strokeCap = StrokeCap.butt,
+      );
+    }
 
-    // Horizontal bar (right side of G)
+    // Google colors: Blue, Red, Yellow, Green
+    arc(-1.5708, 1.5708, const Color(0xFF4285F4)); // top-right blue
+    arc(0.0, 1.5708, const Color(0xFF34A853));     // bottom-right green
+    arc(1.5708, 0.7854, const Color(0xFFFBBC05));  // bottom-left yellow
+    arc(2.3562, 0.7854, const Color(0xFFEA4335));  // left red
+
+    // Horizontal bar for the "G" crossbar
+    final barY = cy;
+    final barLeft = cx;
+    final barRight = cx + r + sw * 0.5;
     canvas.drawRect(
-      Rect.fromLTWH(c.dx, c.dy - size.height * 0.09, r * 0.95, size.height * 0.18),
+      Rect.fromLTWH(barLeft, barY - sw * 0.5, barRight - barLeft, sw),
       Paint()..color = const Color(0xFF4285F4),
     );
-  }
-
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
-}
-
-// ── Subtle background grid ────────────────────────────────────────────────────
-
-class _GridLines extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return CustomPaint(painter: _GridPainter());
-  }
-}
-
-class _GridPainter extends CustomPainter {
-  @override
-  void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-      ..color = Colors.white.withValues(alpha: 0.03)
-      ..strokeWidth = 1;
-
-    const spacing = 48.0;
-    for (double x = 0; x < size.width; x += spacing) {
-      canvas.drawLine(Offset(x, 0), Offset(x, size.height), paint);
-    }
-    for (double y = 0; y < size.height; y += spacing) {
-      canvas.drawLine(Offset(0, y), Offset(size.width, y), paint);
-    }
   }
 
   @override

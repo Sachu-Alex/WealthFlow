@@ -201,10 +201,10 @@ class _BalanceBanner extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF1E293B) : Colors.white,
+        color: isDark ? const Color(0xFF0F2233) : Colors.white,
         borderRadius: BorderRadius.circular(16),
         border: isDark
-            ? Border.all(color: const Color(0xFF334155))
+            ? Border.all(color: const Color(0xFF1A3349))
             : Border.all(
                 color: const Color(0xFF16A34A).withValues(alpha: 0.25)),
         boxShadow: isDark

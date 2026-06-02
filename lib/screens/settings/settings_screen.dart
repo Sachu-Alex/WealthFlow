@@ -82,7 +82,7 @@ class SettingsScreen extends ConsumerWidget {
                 children: [
                   _SettingsTile(
                     icon: Icons.info_outline_rounded,
-                    iconColor: const Color(0xFF0891B2),
+                    iconColor: const Color(0xFF2DD4BF),
                     title: 'WealthFlow',
                     subtitle: 'Version 1.0.0',
                   ),
@@ -123,7 +123,7 @@ class SettingsScreen extends ConsumerWidget {
                       height: 56,
                       decoration: BoxDecoration(
                         gradient: const LinearGradient(
-                          colors: [Color(0xFF0D9488), Color(0xFF0891B2)],
+                          colors: [Color(0xFF0D9488), Color(0xFF2DD4BF)],
                         ),
                         borderRadius: BorderRadius.circular(16),
                       ),
