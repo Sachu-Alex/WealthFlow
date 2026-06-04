@@ -12,6 +12,7 @@ import '../screens/investments/investment_detail_screen.dart';
 import '../screens/withdrawals/add_withdrawal_screen.dart';
 import '../screens/reports/reports_screen.dart';
 import '../screens/settings/settings_screen.dart';
+import '../screens/expenses/bill_splitter_screen.dart';
 
 final goRouterProvider = Provider<GoRouter>((ref) {
   final authState = ref.watch(authStateProvider);
@@ -83,6 +84,10 @@ final goRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/expenses/chat',
         builder: (context, state) => const ChatExpenseScreen(),
+      ),
+      GoRoute(
+        path: '/expenses/split',
+        builder: (context, state) => const BillSplitterScreen(),
       ),
       GoRoute(
         path: '/investments/add',

@@ -25,6 +25,11 @@ class ExpensesScreen extends ConsumerWidget {
             title: const Text('Expenses'),
             actions: [
               IconButton(
+                icon: const Icon(Icons.call_split_rounded),
+                tooltip: 'AI Bill Splitter',
+                onPressed: () => context.push('/expenses/split'),
+              ),
+              IconButton(
                 icon: const Icon(Icons.add_comment_rounded),
                 tooltip: 'Log Expense',
                 onPressed: () => context.push('/expenses/chat'),

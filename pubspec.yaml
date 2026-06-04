@@ -25,6 +25,10 @@ dependencies:
   sign_in_with_apple: ^6.1.4
   # Animations
   flutter_animate: ^4.5.0
+  # Bill Splitter (100% free, on-device)
+  google_mlkit_text_recognition: ^0.15.1
+  image_picker: ^1.1.2
+  speech_to_text: ^7.0.0
 
 dev_dependencies:
   flutter_test:
