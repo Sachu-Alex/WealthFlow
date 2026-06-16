@@ -10,6 +10,11 @@ class WithdrawalRepository {
   CollectionReference<Map<String, dynamic>> get _col =>
       _db.collection('users').doc(_uid).collection('withdrawals');
 
+  Future<List<Withdrawal>> getAll() async {
+    final snap = await _col.orderBy('withdrawal_date', descending: true).get();
+    return snap.docs.map(Withdrawal.fromFirestore).toList();
+  }
+
   Future<List<Withdrawal>> getByInvestmentId(String investmentId) async {
     final snap = await _col
         .where('investment_id', isEqualTo: investmentId)

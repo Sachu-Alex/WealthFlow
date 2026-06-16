@@ -40,6 +40,10 @@ final withdrawalsProvider =
   WithdrawalsNotifier.new,
 );
 
+final allWithdrawalsProvider = FutureProvider<List<Withdrawal>>((ref) async {
+  return ref.read(withdrawalRepositoryProvider).getAll();
+});
+
 class InvestmentStats {
   final double totalWithdrawn;
   final double remainingBalance;

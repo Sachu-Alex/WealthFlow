@@ -1,11 +1,15 @@
 import 'package:fl_chart/fl_chart.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
+import 'package:printing/printing.dart';
 import '../../core/utils/formatters.dart';
 import '../../data/models/expense.dart';
+import '../../data/services/pdf_report_service.dart';
 import '../../providers/expense_provider.dart';
+import '../../providers/withdrawal_provider.dart';
 
 class ExpensesScreen extends ConsumerWidget {
   const ExpensesScreen({super.key});
@@ -24,6 +28,7 @@ class ExpensesScreen extends ConsumerWidget {
             pinned: true,
             title: const Text('Expenses'),
             actions: [
+              const _PdfExportButton(),
               IconButton(
                 icon: const Icon(Icons.call_split_rounded),
                 tooltip: 'AI Bill Splitter',
@@ -582,6 +587,63 @@ class _ExpenseListItem extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+// ─── PDF Export Button ────────────────────────────────────────────────────────
+
+class _PdfExportButton extends ConsumerStatefulWidget {
+  const _PdfExportButton();
+
+  @override
+  ConsumerState<_PdfExportButton> createState() => _PdfExportButtonState();
+}
+
+class _PdfExportButtonState extends ConsumerState<_PdfExportButton> {
+  bool _loading = false;
+
+  Future<void> _export() async {
+    setState(() => _loading = true);
+    try {
+      final expenses = await ref.read(expensesProvider.future);
+      final withdrawals = await ref.read(allWithdrawalsProvider.future);
+      final user = FirebaseAuth.instance.currentUser;
+
+      final bytes = await PdfReportService.generateReport(
+        userName: user?.displayName ?? 'User',
+        userEmail: user?.email ?? '',
+        expenses: expenses,
+        withdrawals: withdrawals,
+      );
+
+      await Printing.sharePdf(
+        bytes: bytes,
+        filename: 'wealthflow_transactions.pdf',
+      );
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('PDF export failed: $e')),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _loading = false);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return IconButton(
+      icon: _loading
+          ? const SizedBox(
+              width: 18,
+              height: 18,
+              child: CircularProgressIndicator(strokeWidth: 2),
+            )
+          : const Icon(Icons.picture_as_pdf_rounded),
+      tooltip: 'Export PDF',
+      onPressed: _loading ? null : _export,
     );
   }
 }

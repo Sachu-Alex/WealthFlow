@@ -4,7 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
+import 'package:printing/printing.dart';
 import '../../core/utils/formatters.dart';
+import '../../data/services/pdf_report_service.dart';
 import '../../providers/investment_provider.dart';
 import '../../providers/withdrawal_provider.dart';
 import '../../widgets/animated_progress_ring.dart';
@@ -27,6 +29,7 @@ class _InvestmentDetailScreenState
   final _searchCtrl = TextEditingController();
   String _searchQuery = '';
   String _sortBy = 'date_desc';
+  bool _exporting = false;
 
   @override
   void initState() {
@@ -39,6 +42,38 @@ class _InvestmentDetailScreenState
     _tabController.dispose();
     _searchCtrl.dispose();
     super.dispose();
+  }
+
+  Future<void> _exportPdf() async {
+    final investment =
+        await ref.read(investmentByIdProvider(widget.investmentId).future);
+    if (investment == null || !mounted) return;
+
+    setState(() => _exporting = true);
+    try {
+      final withdrawals =
+          await ref.read(withdrawalsProvider(widget.investmentId).future);
+
+      final bytes = await PdfReportService.generateInvestmentReport(
+        investment: investment,
+        withdrawals: withdrawals,
+      );
+
+      final safeFileName =
+          investment.investorName.replaceAll(RegExp(r'[^\w]'), '_');
+      await Printing.sharePdf(
+        bytes: bytes,
+        filename: 'wealthflow_$safeFileName.pdf',
+      );
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('PDF export failed: $e')),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _exporting = false);
+    }
   }
 
   @override
@@ -73,6 +108,19 @@ class _InvestmentDetailScreenState
                   onPressed: () => context.pop(),
                 ),
                 actions: [
+                  IconButton(
+                    icon: _exporting
+                        ? const SizedBox(
+                            width: 18,
+                            height: 18,
+                            child: CircularProgressIndicator(
+                                strokeWidth: 2, color: Colors.white),
+                          )
+                        : const Icon(Icons.picture_as_pdf_rounded,
+                            color: Colors.white),
+                    tooltip: 'Export PDF',
+                    onPressed: _exporting ? null : _exportPdf,
+                  ),
                   IconButton(
                     icon: const Icon(Icons.add_circle_outline_rounded,
                         color: Colors.white),
